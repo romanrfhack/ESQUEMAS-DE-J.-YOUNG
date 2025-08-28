@@ -147,13 +147,7 @@
       templateId: "REEMPLAZA_TEMPLATE_ID",
       publicKey: "REEMPLAZA_PUBLIC_KEY",
       toEmail: "tu_correo@ejemplo.com"
-    };
-
-    // WhatsApp (click-to-chat)
-    const WHATSAPP_CONFIG = {
-      number: "", // Ej: 5215512345678 (México). Si está vacío, no se abre WhatsApp.
-      addAnswers: false
-    };
+    };    
 
     // Postmark (servidor propio). NO pongas tu token en el cliente.
     // Debes crear y desplegar un endpoint (ej. Vercel/Netlify/Azure).
@@ -167,7 +161,7 @@
     // al enviar se abrirá WhatsApp con el mensaje prellenado y el usuario solo toca "Enviar".
     // Ejemplo México: 5215512345678
     const WHATSAPP_CONFIG = {
-      number: "", // <-- escribe aquí tu número. Si está vacío, se omite.
+      number: "5215527675397", // <-- escribe aquí tu número. Si está vacío, se omite.
       addAnswers: false // si true, incluye además el listado de 205 respuestas al final (puede ser largo)
     };
 
@@ -270,7 +264,10 @@
     }
 
     function getFormData() {
-      const get = (name) => document.querySelector(`[name="${name}"]`)?.value?.trim() || '';
+      const get = (name) => {
+        const el = document.querySelector(`[name="${name}"]`);
+        return (el && typeof el.value === 'string') ? el.value.trim() : '';
+      };
       return {
         nombre: get('nombre'),
         escolaridad: get('escolaridad'),
@@ -278,15 +275,7 @@
         edad: get('edad'),
         edoCivil: get('edoCivil')
       };
-    }"]`)?.value?.trim() || '';
-      return {
-        nombre: get('nombre'),
-        escolaridad: get('escolaridad'),
-        ocupacion: get('ocupacion'),
-        edad: get('edad'),
-        edoCivil: get('edoCivil')
-      };
-    }
+    } 
 
     function getAnswers() {
       const ans = {};
@@ -336,88 +325,115 @@
     }
 
     // Email (HTML y texto) reutilizable
-    function buildEmailContent(formData, ans, rows){
-      const answersHtml = Object.keys(ans).map(i => `<tr><td style="padding:4px 6px;border:1px solid #ddd;text-align:right">${i}</td><td style="padding:4px 6px;border:1px solid #ddd">${ans[i]||0}</td></tr>`).join('');
-      const rowsHtml = rows.map(r => `<tr><td style=\"padding:6px;border:1px solid #ddd\">${r.group}</td><td style=\"padding:6px;border:1px solid #ddd\">${r.range}</td><td style=\"padding:6px;border:1px solid #ddd;text-align:right\">${r.sum}</td><td style=\"padding:6px;border:1px solid #ddd;text-align:right\">${r.max}</td><td style=\"padding:6px;border:1px solid #ddd;text-align:right\">${r.pct.toFixed(2)}%</td></tr>`).join('');
+    // Email (HTML y texto) reutilizable
+function buildEmailContent(formData, ans, rows) {
+  const answersHtml = Object.keys(ans)
+    .map((i) => {
+      const v = (ans[i] ?? 0);
+      return `<tr><td style="padding:4px 6px;border:1px solid #ddd;text-align:right">${i}</td><td style="padding:4px 6px;border:1px solid #ddd">${v}</td></tr>`;
+    })
+    .join('');
 
-      const subject = 'Resultados – Cuestionario de Esquemas (Young)';
-      const html = `
-        <div>
-          <h2>CUESTIONARIO DE ESQUEMAS DE J. YOUNG</h2>
-          <p><b>Nombre:</b> ${formData.nombre || ''}<br>
-             <b>Escolaridad:</b> ${formData.escolaridad || ''}<br>
-             <b>Ocupación:</b> ${formData.ocupacion || ''}<br>
-             <b>Edad:</b> ${formData.edad || ''}<br>
-             <b>Estado civil:</b> ${formData.edoCivil || ''}</p>
-          <h3>Totales por grupo</h3>
-          <table style="border-collapse:collapse;border:1px solid #ddd">
-            <thead><tr style="background:#f4f4f4"><th style="padding:6px;border:1px solid #ddd">Grupo</th><th style="padding:6px;border:1px solid #ddd">Rango</th><th style="padding:6px;border:1px solid #ddd">Suma</th><th style="padding:6px;border:1px solid #ddd">Máximo</th><th style="padding:6px;border:1px solid #ddd">%</th></tr></thead>
-            <tbody>${rowsHtml}</tbody>
-          </table>
-          <h3>Respuestas</h3>
-          <table style="border-collapse:collapse;border:1px solid #ddd">
-            <thead><tr style="background:#f4f4f4"><th style="padding:6px;border:1px solid #ddd">#</th><th style="padding:6px;border:1px solid #ddd">Respuesta</th></tr></thead>
-            <tbody>${answersHtml}</tbody>
-          </table>
-        </div>`;
+  const rowsHtml = rows
+    .map((r) =>
+      `<tr>
+        <td style="padding:6px;border:1px solid #ddd">${r.group}</td>
+        <td style="padding:6px;border:1px solid #ddd">${r.range}</td>
+        <td style="padding:6px;border:1px solid #ddd;text-align:right">${r.sum}</td>
+        <td style="padding:6px;border:1px solid #ddd;text-align:right">${r.max}</td>
+        <td style="padding:6px;border:1px solid #ddd;text-align:right">${Number(r.pct).toFixed(2)}%</td>
+      </tr>`
+    )
+    .join('');
 
-      const text = `Resultados – Cuestionario de Esquemas (Young)
-`+
-        `Nombre: ${formData.nombre||''}
-Escolaridad: ${formData.escolaridad||''}
-`+
-        `Ocupación: ${formData.ocupacion||''}
-Edad: ${formData.edad||''}
-Estado civil: ${formData.edoCivil||''}
+  const subject = 'Resultados – Cuestionario de Esquemas (Young)';
 
-`+
-        rows.map(r=>`${r.group} [${r.range}]: ${r.sum}/${r.max} = ${r.pct.toFixed(2)}%`).join('
-');
+  const html = `
+    <div>
+      <h2>CUESTIONARIO DE ESQUEMAS DE J. YOUNG</h2>
+      <p><b>Nombre:</b> ${formData.nombre || ''}<br>
+         <b>Escolaridad:</b> ${formData.escolaridad || ''}<br>
+         <b>Ocupación:</b> ${formData.ocupacion || ''}<br>
+         <b>Edad:</b> ${formData.edad || ''}<br>
+         <b>Estado civil:</b> ${formData.edoCivil || ''}</p>
+      <h3>Totales por grupo</h3>
+      <table style="border-collapse:collapse;border:1px solid #ddd">
+        <thead><tr style="background:#f4f4f4"><th style="padding:6px;border:1px solid #ddd">Grupo</th><th style="padding:6px;border:1px solid #ddd">Rango</th><th style="padding:6px;border:1px solid #ddd">Suma</th><th style="padding:6px;border:1px solid #ddd">Máximo</th><th style="padding:6px;border:1px solid #ddd">%</th></tr></thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>
+      <h3>Respuestas</h3>
+      <table style="border-collapse:collapse;border:1px solid #ddd">
+        <thead><tr style="background:#f4f4f4"><th style="padding:6px;border:1px solid #ddd">#</th><th style="padding:6px;border:1px solid #ddd">Respuesta</th></tr></thead>
+        <tbody>${answersHtml}</tbody>
+      </table>
+    </div>`.trim();
 
-      return {subject, html, text};
-    }
+  const text = [
+    'Resultados – Cuestionario de Esquemas (Young)',
+    `Nombre: ${formData.nombre || ''}`,
+    `Escolaridad: ${formData.escolaridad || ''}`,
+    `Ocupación: ${formData.ocupacion || ''}`,
+    `Edad: ${formData.edad || ''}`,
+    `Estado civil: ${formData.edoCivil || ''}`,
+    '',
+    ...rows.map((r) => `${r.group} [${r.range}]: ${r.sum}/${r.max} = ${Number(r.pct).toFixed(2)}%`)
+  ].join('\n');
 
-    function renderResultsTable(rows) {(rows) {
-      const totalSum = rows.reduce((a,b)=>a+b.sum,0);
-      const totalMax = rows.reduce((a,b)=>a+b.max,0);
-      const totalPct = totalMax>0 ? (totalSum/totalMax)*100 : 0;
+  return { subject, html, text };
+}
 
-      const tableHtml = `
-        <table>
-          <thead>
-            <tr>
-              <th>Grupo</th>
-              <th>Rango</th>
-              <th>Suma (B)</th>
-              <th>Máx (C)</th>
-              <th>% (D)</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${rows.map(r => `
-              <tr>
-                <td>${r.group}</td>
-                <td>${r.range}</td>
-                <td>${r.sum}</td>
-                <td>${r.max}</td>
-                <td>${r.pct.toFixed(2)}%</td>
-              </tr>
-            `).join('')}
-          </tbody>
-          <tfoot>
-            <tr>
-              <th>Total</th>
-              <th>—</th>
-              <th>${totalSum}</th>
-              <th>${totalMax}</th>
-              <th>${totalPct.toFixed(2)}%</th>
-            </tr>
-          </tfoot>
-        </table>`;
+function renderResultsTable(rows) {
+  if (!Array.isArray(rows) || rows.length === 0) {
+    console.warn('renderResultsTable: rows vacío o inválido');
+    return;
+  }
 
-      document.getElementById('resultsTableWrap').innerHTML = tableHtml;
-      document.getElementById('resultsCard').style.display = 'block';
-    }
+  const fmt = (n) => Number(n || 0).toLocaleString('es-MX');
+  const pctFmt = (n) => `${Number(n || 0).toFixed(2)}%`;
+
+  const totalSum = rows.reduce((a, b) => a + Number(b.sum || 0), 0);
+  const totalMax = rows.reduce((a, b) => a + Number(b.max || 0), 0);
+  const totalPct = totalMax > 0 ? (totalSum / totalMax) * 100 : 0;
+
+  const tableHtml = `
+    <table>
+      <thead>
+        <tr>
+          <th>Grupo</th>
+          <th>Rango</th>
+          <th>Suma (B)</th>
+          <th>Máx (C)</th>
+          <th>% (D)</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows.map(r => `
+          <tr>
+            <td>${r.group}</td>
+            <td>${r.range}</td>
+            <td>${fmt(r.sum)}</td>
+            <td>${fmt(r.max)}</td>
+            <td>${pctFmt(r.pct)}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+      <tfoot>
+        <tr>
+          <th>Total</th>
+          <th>—</th>
+          <th>${fmt(totalSum)}</th>
+          <th>${fmt(totalMax)}</th>
+          <th>${pctFmt(totalPct)}</th>
+        </tr>
+      </tfoot>
+    </table>`.trim();
+
+  const wrap = document.getElementById('resultsTableWrap');
+  const card = document.getElementById('resultsCard');
+  if (wrap) wrap.innerHTML = tableHtml;
+  if (card) card.style.display = 'block';
+}
+
 
     // CSV de respaldo
     function toCSV(ans, rows) {
@@ -431,31 +447,38 @@ Estado civil: ${formData.edoCivil||''}
     }
 
     // Construye el mensaje para WhatsApp (resumen compacto)
-    function buildWhatsAppMessage(formData, rows, ans){
-      const header = `Resultados – Cuestionario de Esquemas (Young)
-`+
-        `Nombre: ${formData.nombre||''}
-Escolaridad: ${formData.escolaridad||''}
-`+
-        `Ocupación: ${formData.ocupacion||''}
-Edad: ${formData.edad||''}
-Estado civil: ${formData.edoCivil||''}`;
-      const body = rows.map((r,i)=>{
-        return `${i+1}. ${r.group} [${r.range}]: ${r.sum}/${r.max} = ${r.pct.toFixed(1)}%`;
-      }).join("
-");
-      let msg = `${header}
+    function buildWhatsAppMessage(formData, rows, ans) {
+      const ln = '\n';
 
-Totales por grupo:
-${body}`;
-      if (WHATSAPP_CONFIG.addAnswers){
-        const answers = Object.keys(ans).map(i=>`${i}: ${ans[i]||0}`).join(", ");
-        msg += `
+      const header = [
+        'Resultados – Cuestionario de Esquemas (Young)',
+        `Nombre: ${formData?.nombre || ''}`,
+        `Escolaridad: ${formData?.escolaridad || ''}`,
+        `Ocupación: ${formData?.ocupacion || ''}`,
+        `Edad: ${formData?.edad || ''}`,
+        `Estado civil: ${formData?.edoCivil || ''}`
+      ].join(ln);
 
-Respuestas: ${answers}`;
+      const body = (Array.isArray(rows) ? rows : []).map((r, i) => {
+        const pct = Number(r?.pct || 0).toFixed(1);
+        const sum = Number(r?.sum || 0);
+        const max = Number(r?.max || 0);
+        const range = r?.range || '';
+        const group = r?.group || `Grupo ${i + 1}`;
+        return `${i + 1}. ${group} [${range}]: ${sum}/${max} = ${pct}%`;
+      }).join(ln);
+
+      let msg = `${header}${ln}${ln}Totales por grupo:${ln}${body}`;
+
+      if (WHATSAPP_CONFIG?.addAnswers) {
+        const a = ans || {};
+        const answers = Object.keys(a).map(i => `${i}: ${a[i] || 0}`).join(', ');
+        msg += `${ln}${ln}Respuestas: ${answers}`;
       }
+
       return msg;
     }
+
 
     function openWhatsApp(formData, rows, ans){
       if (!WHATSAPP_CONFIG.number) return;
@@ -478,32 +501,26 @@ Respuestas: ${answers}`;
       return await res.json();
     }
 
-    // (Opcional) EmailJS como fallback si no quieres backend
-    function sendViaEmailJS(formData, ans, rows){
-      if (!window.emailjs) return Promise.reject(new Error('EmailJS no cargado'));
+   // (Opcional) EmailJS como fallback si no quieres backend
+    function sendViaEmailJS(formData, ans, rows) {
+      if (!window.emailjs) {
+        return Promise.reject(new Error('EmailJS no cargado'));
+      }
       if (!EMAILJS_CONFIG.serviceId || EMAILJS_CONFIG.serviceId.startsWith('REEMPLAZA')) {
         return Promise.reject(new Error('Configura tus claves de EmailJS en EMAILJS_CONFIG.'));
       }
-      const {subject, html} = buildEmailContent(formData, ans, rows);
+
+      const { subject, html } = buildEmailContent(formData, ans, rows);
       try { emailjs.init(EMAILJS_CONFIG.publicKey); } catch {}
+
       return emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, {
         to_email: EMAILJS_CONFIG.toEmail,
         subject,
-        form_nombre: formData.nombre || '',
-        form_escolaridad: formData.escolaridad || '',
-        form_ocupacion: formData.ocupacion || '',
-        form_edad: formData.edad || '',
-        form_edocivil: formData.edoCivil || '',
-        html_content: html
-      });
-    }(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, {
-        to_email: EMAILJS_CONFIG.toEmail,
-        subject: 'Resultados – Cuestionario de Esquemas (Young)',
-        form_nombre: formData.nombre || '',
-        form_escolaridad: formData.escolaridad || '',
-        form_ocupacion: formData.ocupacion || '',
-        form_edad: formData.edad || '',
-        form_edocivil: formData.edoCivil || '',
+        form_nombre: formData?.nombre || '',
+        form_escolaridad: formData?.escolaridad || '',
+        form_ocupacion: formData?.ocupacion || '',
+        form_edad: formData?.edad || '',
+        form_edocivil: formData?.edoCivil || '',
         html_content: html
       });
     }
@@ -522,7 +539,7 @@ Respuestas: ${answers}`;
       const a = document.createElement('a');
       a.href = url; a.download = 'resultados_cuestionario_young.csv';
       a.style.display = 'none'; document.body.appendChild(a); a.click();
-      setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 100);
+      setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 100);
 
       // Abrir WhatsApp (si configuraste número)
       try { openWhatsApp(form, rows, ans); } catch {}
@@ -542,7 +559,7 @@ Respuestas: ${answers}`;
           alert('No se pudo enviar por correo. Se descargó un CSV con respaldo. También se abrió WhatsApp si configuraste un número.');
         }
       }
-      }
+
       window.scrollTo({ top: document.getElementById('resultsCard').offsetTop - 16, behavior: 'smooth' });
     });
 
@@ -555,10 +572,26 @@ Respuestas: ${answers}`;
       const a = document.createElement('a');
       a.href = url; a.download = 'resultados_cuestionario_young.csv';
       a.style.display = 'none'; document.body.appendChild(a); a.click();
-      setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 100);
+      setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 100);
     });
 
-    renderQuestions();
+
+
+    function safeInit(){
+      try {
+        if (!Array.isArray(QUESTIONS) || QUESTIONS.length === 0) {
+          console.warn('QUESTIONS vacío; creando placeholders');
+          window.QUESTIONS = Array.from({length:205}, (_,i)=>`Pregunta ${i+1}`);
+        }
+        renderQuestions();
+      } catch (e) {
+        console.error('Error inicializando preguntas', e);
+        alert('Hubo un error mostrando las preguntas. Revisa la consola del navegador.');
+      }
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', safeInit);
+    } else { safeInit(); }
   </script>
 </body>
 </html>
