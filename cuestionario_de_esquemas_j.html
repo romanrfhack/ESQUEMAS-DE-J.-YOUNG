@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CUESTIONARIO DE ESQUEMAS DE J. YOUNG</title>
+  <style>
+    :root {
+      --bg: #0b0c0e;
+      --card: #121418;
+      --muted: #9aa3af;
+      --text: #e5e7eb;
+      --accent: #a78bfa;
+      --accent-2: #34d399;
+      --danger: #ef4444;
+      --border: #1f2937;
+    }
+    html, body { background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; }
+    * { box-sizing: border-box; }
+    .container { max-width: 980px; margin: 24px auto 96px; padding: 0 16px; }
+    .card { background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); border: 1px solid var(--border); border-radius: 18px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.35); }
+    h1 { font-size: clamp(24px, 3.4vw, 36px); margin: 0 0 8px; letter-spacing: 0.3px; }
+    .subtitle { color: var(--muted); line-height: 1.5; margin-bottom: 18px; font-size: 14px; }
+    .grid { display: grid; gap: 16px; }
+    .form-grid { grid-template-columns: repeat(6, minmax(0,1fr)); }
+    .input { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; color: var(--text); width: 100%; }
+    label { font-size: 13px; color: var(--muted); display: block; margin-bottom: 6px; }
+
+    .pill { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--border); border-radius: 999px; padding: 6px 12px; background: rgba(255,255,255,0.03); color: var(--muted); font-size: 12px; }
+    .kbd { border: 1px solid var(--border); border-bottom-width: 3px; border-radius: 6px; padding: 2px 6px; background: #0f1115; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; color: var(--text); }
+
+    .scale { display: grid; grid-template-columns: repeat(6, minmax(0,1fr)); gap: 6px; }
+    .scale .opt { display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); background: #0e1014; border-radius: 12px; padding: 10px 8px; cursor: pointer; transition: transform .05s ease, border-color .2s; user-select: none; }
+    .scale input { display: none; }
+    .scale .opt:hover { border-color: #2a3546; }
+    .scale input:checked + .opt { outline: 2px solid rgba(167,139,250,.25); border-color: var(--accent); background: radial-gradient(120px 80px at 50% -10%, rgba(167,139,250,.25), transparent 60%); }
+
+    .q { border-top: 1px dashed var(--border); padding-top: 14px; margin-top: 14px; }
+    .q h3 { margin: 0 0 10px; font-size: 15px; line-height: 1.35; }
+
+    .sticky-submit { position: fixed; inset-inline: 0; bottom: 0; background: linear-gradient(180deg, rgba(11,12,14,0), var(--bg) 30%), var(--bg); border-top: 1px solid var(--border); padding: 14px 16px; }
+    .sticky-inner { max-width: 980px; margin: 0 auto; display: flex; gap: 12px; align-items: center; justify-content: space-between; }
+    .btn { background: var(--accent); border: none; color: #0b0c0e; font-weight: 600; padding: 12px 16px; border-radius: 12px; cursor: pointer; transition: transform .05s ease; }
+    .btn:active { transform: translateY(1px); }
+    .btn.secondary { background: #111318; color: var(--text); border: 1px solid var(--border); }
+
+    .muted { color: var(--muted); }
+    .progress { height: 10px; background: #0f1115; border-radius: 999px; border: 1px solid var(--border); overflow: hidden; }
+    .progress > div { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); width: 0%; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { border-bottom: 1px solid var(--border); padding: 8px 6px; text-align: right; }
+    th:first-child, td:first-child { text-align: left; }
+    .ok { color: var(--accent-2); }
+    .warn { color: var(--danger); }
+
+    .tag { display:inline-block; padding:2px 8px; border:1px solid var(--border); border-radius:999px; font-size:12px; color:var(--muted); }
+
+    @media (max-width: 880px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .scale { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    }
+      .progress-fixed{position:fixed;top:0;left:0;right:0;height:6px;background:#0f1115;border-bottom:1px solid var(--border);z-index:1000}
+    .progress-fixed>div{height:100%;background:linear-gradient(90deg, var(--accent), var(--accent-2));width:0%}
+  </style>
+</head>
+<body>
+  <div class="progress-fixed" aria-hidden="true"><div id="progressFixed"></div></div>
+  <div class="container">
+    <div class="card" style="margin-bottom:16px">
+      <h1>CUESTIONARIO DE ESQUEMAS DE J. YOUNG</h1>
+      <p class="subtitle">
+        Desarrollado por Jeffrey E. Young y Gary Brown, Med. Copyright, 1990. Tomado de Jeffrey E. Young (1999). "Cognitive therapy for personality disorders: A schema‑focused approach". Third Edition. Sarasota, Florida. Professional Resource Press.
+      </p>
+      <div class="grid form-grid">
+        <div>
+          <label>Nombre</label>
+          <input class="input" name="nombre" autocomplete="name" />
+        </div>
+        <div>
+          <label>Escolaridad</label>
+          <input class="input" name="escolaridad" />
+        </div>
+        <div>
+          <label>Ocupación</label>
+          <input class="input" name="ocupacion" />
+        </div>
+        <div>
+          <label>Edad</label>
+          <input class="input" name="edad" type="number" min="0" />
+        </div>
+        <div>
+          <label>Estado civil</label>
+          <input class="input" name="edoCivil" />
+        </div>
+        <div>
+          <label class="muted">Progreso</label>
+          <div class="progress" title="Progreso de respuestas">
+            <div id="progressBar"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <div class="pill" style="margin-bottom:10px">Instrucciones</div>
+      <p class="subtitle" style="margin:0">
+        En la lista de abajo hay una serie de afirmaciones que una persona podría emplear para describirse a sí misma. Por favor lea cada afirmación y decida qué tan bien lo describe. Cuando no esté seguro, base su respuesta en lo que emocionalmente siente, no en lo que piense que es cierto. Si lo desea, reorganice la frase de tal manera que se adecue más a usted. Luego escoja el valor más alto de <b>1 a 6</b> que lo describa, y marque el número con una X en el recuadro correspondiente en cada afirmación.
+      </p>
+      <div style="margin-top:12px; display:grid; gap:8px">
+        <div class="tag">1 Completamente falso de mí</div>
+        <div class="tag">2 La mayor parte falso de mí</div>
+        <div class="tag">3 Ligeramente más verdadero que falso</div>
+        <div class="tag">4 Moderadamente verdadero de mí</div>
+        <div class="tag">5 La mayor parte verdadero de mí</div>
+        <div class="tag">6 Me describe perfectamente</div>
+      </div>
+    </div>
+
+    <div id="questions" class="grid" style="gap:8px"></div>
+
+    <div class="card" id="resultsCard" style="display:none; margin-top:16px">
+      <h2 style="margin:0 0 8px">Resultados por grupo</h2>
+      <p class="subtitle" style="margin:0 0 12px">Las fórmulas replican tu archivo: <b>Suma</b> (col. B) por rangos de respuestas, <b>Máximo</b> (col. C) = número de reactivos×6 y <b>%</b> (col. D) = (B/C)*100.</p>
+      <div id="resultsTableWrap"></div>
+    </div>
+  </div>
+
+  <div class="sticky-submit">
+    <div class="sticky-inner">
+      <div class="muted">Respondidas: <span id="answeredCount">0</span> / <span id="totalCount">205</span></div>
+      <div style="display:flex; gap:8px">
+        <button class="btn secondary" id="exportCsvBtn" type="button">Descargar CSV</button>
+        <button class="btn" id="submitBtn" type="button">Calcular & Enviar resultados</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EmailJS (rellena tus claves en EMAILJS_CONFIG más abajo) -->
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  <script>
+    // =====================
+    // Configuración
+    // =====================
+    const EMAILJS_CONFIG = {
+      serviceId: "REEMPLAZA_SERVICE_ID",
+      templateId: "REEMPLAZA_TEMPLATE_ID",
+      publicKey: "REEMPLAZA_PUBLIC_KEY",
+      toEmail: "tu_correo@ejemplo.com"
+    };
+
+    // WhatsApp (click-to-chat)
+    const WHATSAPP_CONFIG = {
+      number: "", // Ej: 5215512345678 (México). Si está vacío, no se abre WhatsApp.
+      addAnswers: false
+    };
+
+    // Postmark (servidor propio). NO pongas tu token en el cliente.
+    // Debes crear y desplegar un endpoint (ej. Vercel/Netlify/Azure).
+    const POSTMARK_CONFIG = {
+      endpointUrl: "", // ej. "/api/postmark-send" o "https://tuapp.vercel.app/api/postmark-send"
+      fromEmail: "",  // debe coincidir con tu Sender Signature o dominio verificado en Postmark
+      toEmail: ""     // a dónde recibes los resultados
+    };
+
+    // WhatsApp: si pones tu número en formato internacional (sin +, sin espacios),
+    // al enviar se abrirá WhatsApp con el mensaje prellenado y el usuario solo toca "Enviar".
+    // Ejemplo México: 5215512345678
+    const WHATSAPP_CONFIG = {
+      number: "", // <-- escribe aquí tu número. Si está vacío, se omite.
+      addAnswers: false // si true, incluye además el listado de 205 respuestas al final (puede ser largo)
+    };
+
+    // Rangos de grupos (basados en tu imagen; ajustamos el último para evitar doble conteo del #190)
+    const GROUPS = [
+      { name: "Grupo 1",  start: 1,   end: 9 },
+      { name: "Grupo 2",  start: 10,  end: 27 },
+      { name: "Grupo 3",  start: 28,  end: 44 },
+      { name: "Grupo 4",  start: 45,  end: 54 },
+      { name: "Grupo 5",  start: 55,  end: 69 },
+      { name: "Grupo 6",  start: 70,  end: 78 },
+      { name: "Grupo 7",  start: 79,  end: 87 },
+      { name: "Grupo 8",  start: 88,  end: 102 },
+      { name: "Grupo 9",  start: 103, end: 116 },
+      { name: "Grupo 10", start: 117, end: 127 },
+      { name: "Grupo 11", start: 128, end: 137 },
+      { name: "Grupo 12", start: 138, end: 154 },
+      { name: "Grupo 13", start: 155, end: 163 },
+      { name: "Grupo 14", start: 164, end: 179 },
+      { name: "Grupo 15", start: 180, end: 190 },
+      { name: "Grupo 16", start: 191, end: 205 } // <- C16=90 (=15*6)
+    ];
+
+    // Afirmaciones iniciales (27). Puedes añadir las que faltan **en este mismo arreglo**;
+    // si hay menos de 205, se repetirá la última automáticamente hasta llegar a 205.
+    const QUESTIONS = [
+      "Las personas no han estado ahí para satisfacer mis necesidades emocionales",
+      "No he recibido amor y atención",
+      "La mayor parte del tiempo, no he tenido a nadie que me brinde consejo y apoyo emocional",
+      "La mayor parte del tiempo, no he tenido a nadie que me cuide, que comparta conmigo o que se preocupe profundamente por todo lo que me pasa",
+      "Por mucho tiempo de mi vida, no he tenido a nadie que quisiera estar estrechamente ligado a mí, y compartir mucho tiempo",
+      "En general, las personas no han estado ahí para darme calidez, apoyo y afecto",
+      "Por mucho tiempo de mi vida no he sentido que sea especial para nadie",
+      "La mayor parte del tiempo no he tenido a nadie que realmente me escuche, me comprenda o esté sintonizado con mis verdaderas necesidades y sentimientos",
+      "Rara vez he tenido una persona fuerte que me brinde consejos sabios o dirección cuando no estoy seguro de qué hacer",
+      "Me preocupa que las personas a quienes quiero mucho mueran pronto, aun cuando existen muy pocas razones médicas que sustentan mi preocupación",
+      "Me descubro a mí mismo(a) aferrándome a las personas de quienes estoy cerca porque temo que me abandonen",
+      "Me preocupa que las personas a quienes me siento cercano me dejen o me abandonen",
+      "Siento que me falta una base estable de apoyo emocional",
+      "No siento que las relaciones interpersonales importantes vayan a durar. Tengo la expectativa de que ellas se acabarán",
+      "Me siento adicto(a) a parejas que no pueden estar ahí para mí en forma comprometida",
+      "Al final, estaré solo(a)",
+      "Cuando siento que alguien que me importa está tratando de alejarse de mí, me desespero",
+      "Algunas veces estoy tan preocupado(a) de que las personas vayan a abandonarme, que termino alejándolas",
+      "Me aflijo cuando alguien me deja solo(a), aun por un corto periodo de tiempo",
+      "No puedo contar con que las personas que me apoyan estén presentes en forma consistente",
+      "No me permito acercarme de verdad a otras personas, ya que no puedo estar seguro(a) de que estarán ahí para siempre",
+      "Pareciera que las personas importantes en mi vida siempre están yendo y viniendo",
+      "Me preocupa muchísimo que las personas a quienes quiero encuentren a alguien más a quien prefieran, y me dejen",
+      "Las personas que han estado cerca de mí han sido muy impredecibles: unas veces están disponibles y cariñosas conmigo y al minuto están enojadas, molestas, peleándose, etc.",
+      "Necesito tanto a las otras personas que me preocupo acerca de la posibilidad de perderlas",
+      "Me siento tan indefenso(a) si no tengo personas que me protejan, que me preocupa perderlas",
+      "No puedo ser yo mismo(a) o expresar lo que en realidad yo siento, porque las personas me abandonarán"
+    ];
+
+    // Completar hasta 205 repitiendo la última
+    while (QUESTIONS.length < 205) {
+      QUESTIONS.push(QUESTIONS[QUESTIONS.length - 1] + ` (repetida)`);
+    }
+
+    // ===== Render =====
+    const questionsWrap = document.getElementById('questions');
+    const progressBar = document.getElementById('progressBar');
+    const progressFixed = document.getElementById('progressFixed');
+    const answeredCountEl = document.getElementById('answeredCount');
+    const totalCountEl = document.getElementById('totalCount');
+    totalCountEl.textContent = QUESTIONS.length;
+
+    function qId(i) { return `q_${i}`; }
+
+    function renderQuestions() {
+      const frag = document.createDocumentFragment();
+      QUESTIONS.forEach((text, idx) => {
+        const n = idx + 1;
+        const q = document.createElement('div');
+        q.className = 'card q';
+        q.innerHTML = `
+          <h3><span class="muted">${n}.</span> ${text}</h3>
+          <div class="scale" role="radiogroup" aria-label="Escala 1 a 6">
+            ${[1,2,3,4,5,6].map(v => `
+              <label>
+                <input type="radio" name="${qId(n)}" value="${v}">
+                <div class="opt" title="${v}"><div>${v}</div></div>
+              </label>
+            `).join('')}
+          </div>`;
+        frag.appendChild(q);
+      });
+      questionsWrap.appendChild(frag);
+
+      // Restaura desde localStorage
+      const saved = JSON.parse(localStorage.getItem('young_schema_answers') || '{}');
+      for (let i=1; i<=QUESTIONS.length; i++) {
+        if (saved[i]) {
+          const el = document.querySelector(`input[name="${qId(i)}"][value="${saved[i]}"]`);
+          if (el) el.checked = true;
+        }
+      }
+      updateProgress();
+    }
+
+    function getFormData() {
+      const get = (name) => document.querySelector(`[name="${name}"]`)?.value?.trim() || '';
+      return {
+        nombre: get('nombre'),
+        escolaridad: get('escolaridad'),
+        ocupacion: get('ocupacion'),
+        edad: get('edad'),
+        edoCivil: get('edoCivil')
+      };
+    }"]`)?.value?.trim() || '';
+      return {
+        nombre: get('nombre'),
+        escolaridad: get('escolaridad'),
+        ocupacion: get('ocupacion'),
+        edad: get('edad'),
+        edoCivil: get('edoCivil')
+      };
+    }
+
+    function getAnswers() {
+      const ans = {};
+      for (let i=1; i<=QUESTIONS.length; i++) {
+        const picked = document.querySelector(`input[name="${qId(i)}"]:checked`);
+        ans[i] = picked ? Number(picked.value) : 0; // 0 si no contestó
+      }
+      return ans;
+    }
+
+    function updateProgress() {
+      const ans = getAnswers();
+      let answered = 0;
+      for (let i=1; i<=QUESTIONS.length; i++) if (ans[i] > 0) answered++;
+      const pct = Math.round((answered / QUESTIONS.length) * 100);
+      progressBar.style.width = pct + '%';
+      if(progressFixed) progressFixed.style.width = pct + '%';
+      answeredCountEl.textContent = answered;
+      localStorage.setItem('young_schema_answers', JSON.stringify(ans));
+    }
+
+    document.addEventListener('change', (e) => {
+      if (e.target && e.target.matches('input[type="radio"]')) updateProgress();
+      if (e.target && e.target.matches('.input')) localStorage.setItem('young_schema_form', JSON.stringify(getFormData()));
+    });
+
+    // Restaurar datos del formulario
+    (function restoreForm(){
+      const f = JSON.parse(localStorage.getItem('young_schema_form') || '{}');
+      for (const k of ['nombre','escolaridad','ocupacion','edad','edoCivil']) {
+        const el = document.querySelector(`[name="${k}"]`);
+        if (el && f[k]) el.value = f[k];
+      }
+    })();
+
+    // Cálculos por grupos (equivalente a col. B, C y D)
+    function calcGroupResults(ans) {
+      const rows = GROUPS.map(g => {
+        let sum = 0;
+        for (let i=g.start; i<=g.end; i++) sum += (ans[i] || 0);
+        const reactivos = g.end - g.start + 1;
+        const max = reactivos * 6; // col. C
+        const pct = max > 0 ? (sum / max) * 100 : 0; // col. D
+        return { group: g.name, range: `${g.start}-${g.end}`, sum, max, pct };
+      });
+      return rows;
+    }
+
+    // Email (HTML y texto) reutilizable
+    function buildEmailContent(formData, ans, rows){
+      const answersHtml = Object.keys(ans).map(i => `<tr><td style="padding:4px 6px;border:1px solid #ddd;text-align:right">${i}</td><td style="padding:4px 6px;border:1px solid #ddd">${ans[i]||0}</td></tr>`).join('');
+      const rowsHtml = rows.map(r => `<tr><td style=\"padding:6px;border:1px solid #ddd\">${r.group}</td><td style=\"padding:6px;border:1px solid #ddd\">${r.range}</td><td style=\"padding:6px;border:1px solid #ddd;text-align:right\">${r.sum}</td><td style=\"padding:6px;border:1px solid #ddd;text-align:right\">${r.max}</td><td style=\"padding:6px;border:1px solid #ddd;text-align:right\">${r.pct.toFixed(2)}%</td></tr>`).join('');
+
+      const subject = 'Resultados – Cuestionario de Esquemas (Young)';
+      const html = `
+        <div>
+          <h2>CUESTIONARIO DE ESQUEMAS DE J. YOUNG</h2>
+          <p><b>Nombre:</b> ${formData.nombre || ''}<br>
+             <b>Escolaridad:</b> ${formData.escolaridad || ''}<br>
+             <b>Ocupación:</b> ${formData.ocupacion || ''}<br>
+             <b>Edad:</b> ${formData.edad || ''}<br>
+             <b>Estado civil:</b> ${formData.edoCivil || ''}</p>
+          <h3>Totales por grupo</h3>
+          <table style="border-collapse:collapse;border:1px solid #ddd">
+            <thead><tr style="background:#f4f4f4"><th style="padding:6px;border:1px solid #ddd">Grupo</th><th style="padding:6px;border:1px solid #ddd">Rango</th><th style="padding:6px;border:1px solid #ddd">Suma</th><th style="padding:6px;border:1px solid #ddd">Máximo</th><th style="padding:6px;border:1px solid #ddd">%</th></tr></thead>
+            <tbody>${rowsHtml}</tbody>
+          </table>
+          <h3>Respuestas</h3>
+          <table style="border-collapse:collapse;border:1px solid #ddd">
+            <thead><tr style="background:#f4f4f4"><th style="padding:6px;border:1px solid #ddd">#</th><th style="padding:6px;border:1px solid #ddd">Respuesta</th></tr></thead>
+            <tbody>${answersHtml}</tbody>
+          </table>
+        </div>`;
+
+      const text = `Resultados – Cuestionario de Esquemas (Young)
+`+
+        `Nombre: ${formData.nombre||''}
+Escolaridad: ${formData.escolaridad||''}
+`+
+        `Ocupación: ${formData.ocupacion||''}
+Edad: ${formData.edad||''}
+Estado civil: ${formData.edoCivil||''}
+
+`+
+        rows.map(r=>`${r.group} [${r.range}]: ${r.sum}/${r.max} = ${r.pct.toFixed(2)}%`).join('
+');
+
+      return {subject, html, text};
+    }
+
+    function renderResultsTable(rows) {(rows) {
+      const totalSum = rows.reduce((a,b)=>a+b.sum,0);
+      const totalMax = rows.reduce((a,b)=>a+b.max,0);
+      const totalPct = totalMax>0 ? (totalSum/totalMax)*100 : 0;
+
+      const tableHtml = `
+        <table>
+          <thead>
+            <tr>
+              <th>Grupo</th>
+              <th>Rango</th>
+              <th>Suma (B)</th>
+              <th>Máx (C)</th>
+              <th>% (D)</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map(r => `
+              <tr>
+                <td>${r.group}</td>
+                <td>${r.range}</td>
+                <td>${r.sum}</td>
+                <td>${r.max}</td>
+                <td>${r.pct.toFixed(2)}%</td>
+              </tr>
+            `).join('')}
+          </tbody>
+          <tfoot>
+            <tr>
+              <th>Total</th>
+              <th>—</th>
+              <th>${totalSum}</th>
+              <th>${totalMax}</th>
+              <th>${totalPct.toFixed(2)}%</th>
+            </tr>
+          </tfoot>
+        </table>`;
+
+      document.getElementById('resultsTableWrap').innerHTML = tableHtml;
+      document.getElementById('resultsCard').style.display = 'block';
+    }
+
+    // CSV de respaldo
+    function toCSV(ans, rows) {
+      const header = ['Pregunta','Respuesta'];
+      const lines = [header.join(',')];
+      for (let i=1; i<=QUESTIONS.length; i++) lines.push(`${i},${ans[i]||0}`);
+      lines.push('');
+      lines.push(['Grupo','Rango','Suma','Max','Porcentaje'].join(','));
+      for (const r of rows) lines.push([r.group, r.range, r.sum, r.max, r.pct.toFixed(2)+'%'].join(','));
+      return lines.join('\n');
+    }
+
+    // Construye el mensaje para WhatsApp (resumen compacto)
+    function buildWhatsAppMessage(formData, rows, ans){
+      const header = `Resultados – Cuestionario de Esquemas (Young)
+`+
+        `Nombre: ${formData.nombre||''}
+Escolaridad: ${formData.escolaridad||''}
+`+
+        `Ocupación: ${formData.ocupacion||''}
+Edad: ${formData.edad||''}
+Estado civil: ${formData.edoCivil||''}`;
+      const body = rows.map((r,i)=>{
+        return `${i+1}. ${r.group} [${r.range}]: ${r.sum}/${r.max} = ${r.pct.toFixed(1)}%`;
+      }).join("
+");
+      let msg = `${header}
+
+Totales por grupo:
+${body}`;
+      if (WHATSAPP_CONFIG.addAnswers){
+        const answers = Object.keys(ans).map(i=>`${i}: ${ans[i]||0}`).join(", ");
+        msg += `
+
+Respuestas: ${answers}`;
+      }
+      return msg;
+    }
+
+    function openWhatsApp(formData, rows, ans){
+      if (!WHATSAPP_CONFIG.number) return;
+      const msg = buildWhatsAppMessage(formData, rows, ans);
+      const url = `https://wa.me/${WHATSAPP_CONFIG.number}?text=${encodeURIComponent(msg)}`;
+      window.open(url, '_blank');
+    }
+
+    // Envío por Postmark (via tu endpoint serverless)
+    async function sendViaPostmark(formData, ans, rows){
+      if (!POSTMARK_CONFIG.endpointUrl) throw new Error('Endpoint Postmark no configurado');
+      if (!POSTMARK_CONFIG.toEmail || !POSTMARK_CONFIG.fromEmail) throw new Error('Configura toEmail y fromEmail en POSTMARK_CONFIG');
+      const {subject, html, text} = buildEmailContent(formData, ans, rows);
+      const res = await fetch(POSTMARK_CONFIG.endpointUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ to: POSTMARK_CONFIG.toEmail, from: POSTMARK_CONFIG.fromEmail, subject, html, text })
+      });
+      if (!res.ok) throw new Error('Fallo el endpoint Postmark');
+      return await res.json();
+    }
+
+    // (Opcional) EmailJS como fallback si no quieres backend
+    function sendViaEmailJS(formData, ans, rows){
+      if (!window.emailjs) return Promise.reject(new Error('EmailJS no cargado'));
+      if (!EMAILJS_CONFIG.serviceId || EMAILJS_CONFIG.serviceId.startsWith('REEMPLAZA')) {
+        return Promise.reject(new Error('Configura tus claves de EmailJS en EMAILJS_CONFIG.'));
+      }
+      const {subject, html} = buildEmailContent(formData, ans, rows);
+      try { emailjs.init(EMAILJS_CONFIG.publicKey); } catch {}
+      return emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, {
+        to_email: EMAILJS_CONFIG.toEmail,
+        subject,
+        form_nombre: formData.nombre || '',
+        form_escolaridad: formData.escolaridad || '',
+        form_ocupacion: formData.ocupacion || '',
+        form_edad: formData.edad || '',
+        form_edocivil: formData.edoCivil || '',
+        html_content: html
+      });
+    }(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, {
+        to_email: EMAILJS_CONFIG.toEmail,
+        subject: 'Resultados – Cuestionario de Esquemas (Young)',
+        form_nombre: formData.nombre || '',
+        form_escolaridad: formData.escolaridad || '',
+        form_ocupacion: formData.ocupacion || '',
+        form_edad: formData.edad || '',
+        form_edocivil: formData.edoCivil || '',
+        html_content: html
+      });
+    }
+
+    // Eventos
+    document.getElementById('submitBtn').addEventListener('click', async () => {
+      const form = getFormData();
+      const ans = getAnswers();
+      const rows = calcGroupResults(ans);
+      renderResultsTable(rows);
+
+      // Guarda CSV localmente como respaldo
+      const csv = toCSV(ans, rows);
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'resultados_cuestionario_young.csv';
+      a.style.display = 'none'; document.body.appendChild(a); a.click();
+      setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 100);
+
+      // Abrir WhatsApp (si configuraste número)
+      try { openWhatsApp(form, rows, ans); } catch {}
+
+      // Intentar Postmark primero
+      try {
+        await sendViaPostmark(form, ans, rows);
+        alert('¡Resultados enviados por correo (Postmark)! y CSV descargado');
+      } catch (e1) {
+        console.warn('Postmark falló o no está configurado:', e1);
+        // Fallback EmailJS si lo configuraste
+        try {
+          await sendViaEmailJS(form, ans, rows);
+          alert('¡Resultados enviados por correo (EmailJS)! y CSV descargado');
+        } catch (e2) {
+          console.warn('EmailJS también falló:', e2);
+          alert('No se pudo enviar por correo. Se descargó un CSV con respaldo. También se abrió WhatsApp si configuraste un número.');
+        }
+      }
+      }
+      window.scrollTo({ top: document.getElementById('resultsCard').offsetTop - 16, behavior: 'smooth' });
+    });
+
+    document.getElementById('exportCsvBtn').addEventListener('click', () => {
+      const ans = getAnswers();
+      const rows = calcGroupResults(ans);
+      const csv = toCSV(ans, rows);
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'resultados_cuestionario_young.csv';
+      a.style.display = 'none'; document.body.appendChild(a); a.click();
+      setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 100);
+    });
+
+    renderQuestions();
+  </script>
+</body>
+</html>
